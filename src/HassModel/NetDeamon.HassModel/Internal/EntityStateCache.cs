@@ -24,7 +24,7 @@ internal class EntityStateCache(IHomeAssistantRunner hassRunner) : IDisposable
 
         var hassStates = await hassRunner.CurrentConnection.GetStatesAsync(cancellationToken).ConfigureAwait(false);
 
-        foreach (var hassClientState in hassStates ?? [])
+        foreach (var hassClientState in hassStates)
         {
             _latestStates[hassClientState.EntityId] = new Lazy<EntityState?>(() => hassClientState.Map());
         }

@@ -30,7 +30,7 @@ internal static class HaRepositry
             var services = await connection.GetServicesAsync(CancellationToken.None).ConfigureAwait(false);
             var states = await connection.GetStatesAsync(CancellationToken.None).ConfigureAwait(false);
 
-            return new HaData(states!, services);
+            return new HaData(states, services);
         }
     }
 

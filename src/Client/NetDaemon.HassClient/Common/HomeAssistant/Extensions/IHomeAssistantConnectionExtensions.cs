@@ -10,12 +10,14 @@ public static class HomeAssistantConnectionExtensions
     /// </summary>
     /// <param name="connection">connected Home Assistant instance</param>
     /// <param name="cancelToken">cancellation token</param>
-    public static async Task<IReadOnlyCollection<HassState>?> GetStatesAsync(this IHomeAssistantConnection connection,
+    public static async Task<HassStateCollection> GetStatesAsync(this IHomeAssistantConnection connection,
         CancellationToken cancelToken)
     {
-        return await connection
+        var states = await connection
             .SendCommandAndReturnResponseAsync<SimpleCommand, IReadOnlyCollection<HassState>>
                 (new SimpleCommand("get_states"), cancelToken).ConfigureAwait(false);
+
+        return states == null ? HassStateCollection.Empty : new HassStateCollection(states);
     }
 
     /// <summary>
