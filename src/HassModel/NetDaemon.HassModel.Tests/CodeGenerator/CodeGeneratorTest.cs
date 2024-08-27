@@ -13,7 +13,7 @@ public class CodeGeneratorTest
     [Fact]
     public void RunCodeGenEmpy()
     {
-        var code = CodeGenTestHelper.GenerateCompilationUnit(_settings, Array.Empty<HassState>(), Array.Empty<HassServiceDomain>());
+        var code = CodeGenTestHelper.GenerateCompilationUnit(_settings, HassStateCollection.Empty, Array.Empty<HassServiceDomain>());
 
         code.DescendantNodes().OfType<FileScopedNamespaceDeclarationSyntax>().First().Name.ToString().Should().Be("RootNameSpace");
 

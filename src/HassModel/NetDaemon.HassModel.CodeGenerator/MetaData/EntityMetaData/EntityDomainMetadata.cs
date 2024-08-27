@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using NetDaemon.Client.Common.HomeAssistant.Model;
 
 namespace NetDaemon.HassModel.CodeGenerator;
 
@@ -13,6 +14,9 @@ record EntityDomainMetadata(
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     bool IsNumeric,
 
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    bool IsMixedDomain,
+
     IReadOnlyList<EntityMetaData> Entities,
 
     IReadOnlyList<EntityAttributeMetaData> Attributes
@@ -24,7 +28,7 @@ record EntityDomainMetadata(
             .Select(t => t.Name)
             .ToHashSet();
 
-    private readonly string prefixedDomain = (IsNumeric && EntityIdHelper.MixedDomains.Contains(Domain)  ? "numeric_" : "") + Domain;
+    private readonly string prefixedDomain = (IsNumeric && IsMixedDomain ? "numeric_" : "") + Domain;
 
     [JsonIgnore]
     public string EntityClassName => $"{prefixedDomain}Entity".ToValidCSharpPascalCase();
@@ -52,6 +56,9 @@ record EntityDomainMetadata(
     public Type? AttributesBaseClass { get; set; }
 };
 
-record EntityMetaData(string id, string? friendlyName, string cSharpName);
+record EntityMetaData(string Id, string? FriendlyName, string CSharpName)
+{
+    public string ObjectId => HaasEntityId.Parse(Id).ObjectId;
+}
 
 record EntityAttributeMetaData(string JsonName, string CSharpName, Type? ClrType);

@@ -13,7 +13,7 @@ internal sealed class CodeGenTestHelper
 {
     public static CompilationUnitSyntax GenerateCompilationUnit(
         CodeGenerationSettings codeGenerationSettings,
-        IReadOnlyCollection<HassState> states,
+        HassStateCollection states,
         IReadOnlyCollection<HassServiceDomain> services)
     {
         var metaData = EntityMetaDataGenerator.GetEntityDomainMetaData(states);

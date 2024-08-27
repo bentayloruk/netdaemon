@@ -69,8 +69,8 @@ internal static class EntitiesGenerator
 
     private static MemberDeclarationSyntax GenerateEntityProperty(EntityMetaData entity, string className)
     {
-        return PropertyWithExpressionBodyNew(className, entity.cSharpName, "_haContext", $"\"{entity.id}\"")
-            .WithSummaryComment(entity.friendlyName);
+        return PropertyWithExpressionBodyNew(className, entity.CSharpName, "_haContext", $"\"{entity.Id}\"")
+            .WithSummaryComment(entity.FriendlyName);
     }
 
     /// <summary>

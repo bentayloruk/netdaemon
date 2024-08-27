@@ -1,10 +1,16 @@
-﻿using System.Collections;
-using System.Collections.ObjectModel;
+﻿using NetDaemon.Client.Common.HomeAssistant.Model;
 
 namespace NetDaemon.Client.HomeAssistant.Model;
 
 public record HassState
 {
+    private static readonly string[] NumericDomains = ["input_number", "number", "proximity"];
+
+    public HassState()
+    {
+        _haasEntityId = new Lazy<HaasEntityId>(() => HaasEntityId.Parse(EntityId));
+    }
+
     [JsonPropertyName("attributes")] public JsonElement? AttributesJson { get; init; }
 
     public IReadOnlyDictionary<string, object>? Attributes
@@ -24,34 +30,22 @@ public record HassState
     {
         return AttributesJson.HasValue ? AttributesJson.Value.Deserialize<T>() : default;
     }
-}
 
-public class HassStateCollection : IReadOnlyCollection<HassState>
-{
-    private readonly IReadOnlyCollection<HassState> _states;
+    private Lazy<HaasEntityId> _haasEntityId { get; }
 
-    public HassStateCollection(IEnumerable<HassState> states)
-    {
-        ArgumentNullException.ThrowIfNull(states);
-        _states = new ReadOnlyCollection<HassState>(states.ToArray());
-    }
+    [JsonIgnore] public string Domain => _haasEntityId.Value.Domain;
 
-    public HassStateCollection()
-    {
-        _states = new ReadOnlyCollection<HassState>(Array.Empty<HassState>());
-    }
+    [JsonIgnore] public string ObjectId => _haasEntityId.Value.ObjectId;
 
-    public IEnumerator<HassState> GetEnumerator()
-    {
-        return _states.GetEnumerator();
-    }
+    public bool IsNumeric =>
+        // Mixed domains have both numeric and non-numeric entities, if it has a 'unit_of_measurement' we treat it as numeric
+        NumericDomains.Contains(Domain)
+        || (_haasEntityId.Value.IsMixedDomain && Attributes?.ContainsKey("unit_of_measurement") == true);
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return ((IEnumerable)_states).GetEnumerator();
-    }
+    [JsonIgnore] public bool IsMixedDomain => _haasEntityId.Value.IsMixedDomain;
 
-    public int Count => _states.Count;
+    private record AttributeString(string friendly_name);
 
-    public static HassStateCollection Empty { get; } = new();
+    [JsonIgnore]
+    public string? FriendlyName => AttributesAs<AttributeString>()?.friendly_name;
 }

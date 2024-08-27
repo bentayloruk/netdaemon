@@ -10,7 +10,7 @@ namespace NetDaemon.HassModel.CodeGenerator;
 
 internal static class HaRepositry
 {
-    public record HaData(IReadOnlyCollection<HassState> states, JsonElement? servicesMetaData);
+    public record HaData(HassStateCollection states, JsonElement? servicesMetaData);
 
     public static async Task<HaData> GetHaData(HomeAssistantSettings homeAssistantSettings)
     {
